@@ -1,7 +1,14 @@
-# -----------------------------------DOWNLOAD VIDEO------------------------------------------------- #
-
-from pytube import YouTube
 import os
+imdir = 'faces'
+targetdir = "unique-faces"
+
+if not os.path.isdir(imdir):
+        os.mkdir("faces")
+if not os.path.isdir(targetdir):
+        os.mkdir(targetdir)
+
+# -----------------------------------DOWNLOAD VIDEO------------------------------------------------- #
+from pytube import YouTube
 
 def downloadYouTube(videourl, path):
     yt = YouTube(videourl)
@@ -12,7 +19,7 @@ def downloadYouTube(videourl, path):
 
 print("\n \nContainer Started")
 print(" >>> Downloading Video from youtube link: https://www.youtube.com/watch?v=JriaiYZZhbY")
-downloadYouTube('https://www.youtube.com/watch?v=JriaiYZZhbY','.')
+downloadYouTube('https://youtu.be/LnqmAvlCxV8','.')
 print(" >>> Download done ")
 
 for file in os.listdir():
@@ -30,8 +37,11 @@ from imutils import face_utils
 
 frame_skip = 4
 face_detect = dlib.get_frontal_face_detector()
+#face_detect = dlib.cnn_face_detection_model_v1("mmod_human_face_detector.dat")
 frame_no = 0
 video_capture = cv2.VideoCapture(video)
+
+
 
 def detect_face(frame):
     frame_original = frame
@@ -68,7 +78,7 @@ while True:
     # Display the frame with detection
     try:
         show, detect= detect_face(frame)
-        cv2.imshow('Video', show)
+        #cv2.imshow('Video', show)
     except Exception as e:
         #print(" >>> can not display video due to this error: {}".format(e))
         pass
@@ -82,20 +92,62 @@ print(" >>> Reach end of Video or Can't receive frame")
 print(" >>> Done, existing video window  and saving detected face")
 
 video_capture.release()
-cv2.destroyAllWindows()
+#cv2.destroyAllWindows()
 
-print(" >>> Detected faces saved to faces Directory.")
+print(" >>> Detected faces saved to faces Directory. \n ------------------------------------------------------------------------------------------------")
 
 
 
 # -----------------------------------FACE CLUSTTERING------------------------------------------------- #
-def cluster():
-    no = 10
-    return no
+from keras.preprocessing import image
+from keras.applications.vgg16 import VGG16
+from keras.applications.vgg16 import preprocess_input
+import numpy as np
+from sklearn.cluster import KMeans
+import os.path
+image.LOAD_TRUNCATED_IMAGES = True 
+model = VGG16(weights='imagenet', include_top=False)
 
-face_no = cluster()
+# Variables
+number_clusters = 4
+images = []
 
+print("\n \n -------------------------------------------------------------------------------------------------------------------------------------------")
 print(" >>> Performing Face Clustering to detect unique faces in faces saved in faces directory")
-print(" >>> Done, Total number of unique face is {}".format(face_no))
+# Loop over files and get features
+filelist = os.listdir(imdir)
+for i, m in enumerate(filelist):
+    filelist[i]= imdir + "/" + m
+    images.append(cv2.imread(filelist[i]))
+featurelist = []
+for i, imagepath in enumerate(filelist):
+    print(" >>> Status: %s / %s" %(i, len(filelist)), end="\r")
+    img = image.load_img(imagepath, target_size=(224, 224))
+    img_data = image.img_to_array(img)
+    img_data = np.expand_dims(img_data, axis=0)
+    img_data = preprocess_input(img_data)
+    features = np.array(model.predict(img_data))
+    featurelist.append(features.flatten())
+
+# Clustering
+kmeans = KMeans(n_clusters=number_clusters, random_state=0).fit(np.array(featurelist))
+
+print("\n")
+
+for i, label in enumerate(kmeans.labels_):
+    dir = targetdir  +  "/" + str(label)
+    name = targetdir + "/"  + str(label) + "/" + str(i) + ".bmp"
+    try:
+        if not os.path.isdir(dir):
+            os.mkdir(dir)
+        cv2.imwrite(name, images[i])
+    except Exception as e:
+        pass
+    
+
+print(" >>> Done")
 print(" >>> Unique Faces saved to Unique-face directory")
 print(" >>> Prigram Ended... exiting ...")
+
+while 1:
+    pass
