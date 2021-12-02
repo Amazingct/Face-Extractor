@@ -1,4 +1,5 @@
 import os
+os.chdir("data")
 imdir = 'faces'
 targetdir = "unique-faces"
 
@@ -96,8 +97,6 @@ video_capture.release()
 
 print(" >>> Detected faces saved to faces Directory. \n ------------------------------------------------------------------------------------------------")
 
-
-
 # -----------------------------------FACE CLUSTTERING------------------------------------------------- #
 from keras.preprocessing import image
 from keras.applications.vgg16 import VGG16
@@ -147,7 +146,9 @@ for i, label in enumerate(kmeans.labels_):
 
 print(" >>> Done")
 print(" >>> Unique Faces saved to Unique-face directory")
-print(" >>> Prigram Ended... exiting ...")
+print(" >>> Press q to exit program")
 
-while 1:
+while (input(" >>> ") != 'q'):
     pass
+
+print("Exiting......")
