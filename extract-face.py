@@ -1,9 +1,14 @@
 import os
 
-os.chdir("data")
+
+if not os.path.isdir('data'):
+    os.mkdir("data")
+    os.chdir("data")
+
+
 imdir = 'faces'
 targetdir = "unique-faces"
-video_link = 'https://youtu.be/JriaiYZZhbY'  # link to youtube video
+video_link = 'https://www.youtube.com/watch?v=uP7MBS4MlVI'  # link to youtube video
 number_clusters = 7  # number of cluster for unique face
 frame_skip = 5  # skip every fifth frame (makes the detection process faster)
 
