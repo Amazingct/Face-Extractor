@@ -3,13 +3,13 @@ import os
 
 if not os.path.isdir('data'):
     os.mkdir("data")
-    os.chdir("data")
+os.chdir("data")
 
 
 imdir = 'faces'
 targetdir = "unique-faces"
 video_link = 'https://www.youtube.com/watch?v=uP7MBS4MlVI'  # link to youtube video
-number_clusters = 7  # number of cluster for unique face
+number_clusters = 2  # number of cluster for unique face
 frame_skip = 5  # skip every fifth frame (makes the detection process faster)
 
 if not os.path.isdir(imdir):
@@ -22,17 +22,15 @@ from pytube import YouTube
 
 
 # function to download youtube video
-def downloadYouTube(videourl, path):
+def downloadYouTube(videourl):
     yt = YouTube(videourl)
     yt = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
-    if not os.path.exists(path):
-        os.makedirs(path)
-    yt.download(path)
+    yt.download()
 
 
 print("\n \nContainer Started")
 print(" >>> Downloading Video from youtube link: {}".format(video_link))
-downloadYouTube(video_link, '')
+downloadYouTube(video_link)
 print(" >>> Download done ")
 
 for file in os.listdir():
@@ -158,9 +156,16 @@ for i, label in enumerate(kmeans.labels_):
 
 print(" >>> Done")
 print(" >>> Unique Faces saved to Unique-face directory")
-print(" >>> Press q to exit program")
+print("Exiting......")
 
-while (input(" >>> ") != 'q'):
+while True:
     pass
 
-print("Exiting......")
+
+'''
+Send all images in data/unique-faces  to database
+Update frontend that service has been completed
+delete data dir
+
+'''
+
