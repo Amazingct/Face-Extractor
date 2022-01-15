@@ -32,7 +32,7 @@ def downloadYouTube(videourl, path):
 
 print("\n \nContainer Started")
 print(" >>> Downloading Video from youtube link: {}".format(video_link))
-downloadYouTube(video_link, '.')
+downloadYouTube(video_link, '')
 print(" >>> Download done ")
 
 for file in os.listdir():
